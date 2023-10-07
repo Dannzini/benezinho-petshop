@@ -1,48 +1,80 @@
 package br.com.fiap.petshop.domain.entity.animal;
 
 import br.com.fiap.petshop.domain.entity.Sexo;
+
 import br.com.fiap.petshop.domain.entity.servico.Servico;
 import br.com.fiap.petshop.infra.security.entity.Pessoa;
 import br.com.fiap.petshop.infra.security.entity.PessoaFisica;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
-import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 
-
+@Entity
+@Table(name = "TB_ANIMAL")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Animal {
 
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SQ_ANIMAL")
+    @SequenceGenerator(name = "SQ_ANIMAL", sequenceName = "SQ_ANIMAL", allocationSize = 1)
+    @Column(name = "ID_ANIMAL")
     private Long id;
 
-
+    @Column(name = "NM_ANIMAL")
     private String nome;
 
+    @Enumerated(EnumType.STRING)
     private Sexo sexo;
-
+    @Column(name = "DT_NASCIMENTO")
     private LocalDate nascimento;
 
+    @Column(name = "RACA")
     private String raca;
 
-
+    @Column(name = "DS_ANIMAL")
     private String descricao;
-
+    @Column(name = "OBSERVACAO")
     private String observacao;
 
-
+    @Column(name = "TP_ANIMAL")
     private String tipo;
 
 
-
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(
+            name = "DONO",
+            referencedColumnName = "ID_PESSOA",
+            foreignKey = @ForeignKey(name = "TB_ANIMAL_FK_DONO")
+    )
     private Pessoa dono;
 
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "TB_ANIMAL_SERVICO",
+            joinColumns = {
+                    @JoinColumn(
+                            name = "ANIMAL",
+                            referencedColumnName = "ID_ANIMAL",
+                            foreignKey = @ForeignKey(name = "TB_ANIMAL_SERVICO_FK_ANIMAL")
+                    )
+            },
+            inverseJoinColumns = {
+                    @JoinColumn(
+                            name = "SERVICO",
+                            referencedColumnName = "ID_SERVICO",
+                            foreignKey = @ForeignKey(name = "TB_ANIMAL_SERVICO_FK_SERVICO")
+                    )
+            }
+    )
+    private Set<Servico> servicos = new LinkedHashSet<>();
 
 
     public Animal() {
     }
-
 
     public Animal(String tipo) {
         this.tipo = tipo;
@@ -128,7 +160,7 @@ public class Animal {
         return tipo;
     }
 
-    public Animal setTipo(String tipo) {
+    public Animal   setTipo(String tipo) {
         this.tipo = tipo;
         return this;
     }
@@ -141,7 +173,6 @@ public class Animal {
         this.dono = dono;
         return this;
     }
-
 
     @Override
     public String toString() {

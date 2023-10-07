@@ -1,6 +1,7 @@
 package br.com.fiap.petshop.infra.security.resources;
 
 import br.com.fiap.petshop.Main;
+import br.com.fiap.petshop.infra.configuration.jwt.JsonTokenNeeded;
 import br.com.fiap.petshop.infra.security.dto.PessoaFisicaDTO;
 import br.com.fiap.petshop.infra.security.entity.PessoaFisica;
 import br.com.fiap.petshop.infra.security.service.PessoaFisicaService;
